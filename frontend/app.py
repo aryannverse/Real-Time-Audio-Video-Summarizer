@@ -10,13 +10,17 @@ import threading
 import uvicorn
 import time
 load_dotenv()
-BACKEND_URL = os.getenv('BACKEND_URL', 'http://localhost:8000')
-WS_URL = os.getenv('WS_URL', 'ws://localhost:8000')
+BACKEND_URL = os.getenv('BACKEND_URL', 'http://127.0.0.1:8000')
+WS_URL = os.getenv('WS_URL', 'ws://127.0.0.1:8000')
 def start_backend():
     try:
         requests.get(f'{BACKEND_URL}/api/history', timeout=0.2)
     except requests.exceptions.RequestException:
         try:
+            import sys
+            p_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+            if p_root not in sys.path:
+                sys.path.insert(0, p_root)
             from backend.main import app as fastapi_app
             host = '127.0.0.1'
             port = 8000
@@ -32,9 +36,10 @@ def start_backend():
                         pass
             thread = threading.Thread(target=lambda: uvicorn.run(fastapi_app, host=host, port=port, log_level='warning'), daemon=True)
             thread.start()
-            time.sleep(0.5)
-        except Exception:
-            pass
+            time.sleep(1.0)
+        except Exception as e:
+            import sys
+            print(f'Backend start error: {str(e)}', file=sys.stderr)
 start_backend()
 st.set_page_config(page_title='AI Audio/Video Summarizer', page_icon='🎙️', layout='wide', initial_sidebar_state='expanded')
 if 'pipeline_running' not in st.session_state:
