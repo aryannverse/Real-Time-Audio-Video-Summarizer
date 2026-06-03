@@ -40,6 +40,8 @@ The system is designed to bypass cloud-IP video downloading restrictions automat
 - 🎨 **Premium Visuals**: Dark-mode dashboard using custom CSS injections for bouncing waveform animations, pulsing AI state circles, and responsive split-screen results.
 - ☁️ **Self-contained Booting**: Detects deployed cloud environments (like Streamlit Cloud) and spins up the FastAPI backend automatically in a background daemon thread.
 
+<img width="1800" height="1980" alt="preview" src="https://github.com/user-attachments/assets/acdceb0c-10ce-4260-b607-a929a69895eb" />
+
 ---
 
 ## 🛠️ Tech Stack
