@@ -1,0 +1,44 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: summarizer_backend
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+    environment:
+      - HOST=0.0.0.0
+      - PORT=8000
+      - DATABASE_URL=sqlite:////app/data/summarizer.db
+      - UPLOAD_DIR=/app/data/uploads
+    volumes:
+      - shared-data:/app/data
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: summarizer_frontend
+    command: streamlit run frontend/app.py --server.port=8501 --server.address=0.0.0.0
+    ports:
+      - "8501:8501"
+    env_file:
+      - .env
+    environment:
+      # Streamlit python backend talks to FastAPI backend container internally
+      - BACKEND_URL=http://backend:8000
+      - WS_URL=ws://backend:8000
+    depends_on:
+      - backend
+    volumes:
+      - shared-data:/app/data
+    restart: unless-stopped
+
+volumes:
+  shared-data:
+    driver: local
