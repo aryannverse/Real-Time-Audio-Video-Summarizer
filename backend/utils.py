@@ -28,7 +28,7 @@ def download_audio_from_url(url: str, output_directory: str, task_id: str) -> st
         if os.path.exists(p):
             cookies_path = p
             break
-    ydl_opts: Dict[str, Any] = {'format': 'bestaudio/best', 'outtmpl': output_template, 'nocheckcertificate': True, 'referer': 'https://www.youtube.com/', 'http_headers': {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36', 'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8', 'Accept-Language': 'en-us,en;q=0.5', 'Sec-Fetch-Mode': 'navigate'}, 'extractor_args': {'youtube': {'player_client': ['web_embedded', 'web', 'tv', 'default']}}, 'postprocessors': [{'key': 'FFmpegExtractAudio', 'preferredcodec': 'wav'}], 'postprocessor_args': ['-ar', '16000', '-ac', '1'], 'prefer_ffmpeg': True, 'quiet': True, 'no_warnings': True}
+    ydl_opts: Dict[str, Any] = {'format': 'bestaudio/best', 'outtmpl': output_template, 'nocheckcertificate': True, 'referer': 'https://www.youtube.com/', 'http_headers': {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36', 'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8', 'Accept-Language': 'en-us,en;q=0.5', 'Sec-Fetch-Mode': 'navigate'}, 'extractor_args': {'youtube': {'player_client': ['android', 'ios', 'web_embedded', 'default']}}, 'postprocessors': [{'key': 'FFmpegExtractAudio', 'preferredcodec': 'wav'}], 'postprocessor_args': ['-ar', '16000', '-ac', '1'], 'prefer_ffmpeg': True, 'quiet': True, 'no_warnings': True}
     if cookies_path:
         ydl_opts['cookiefile'] = cookies_path
     logger.info(f'Downloading audio from URL: {url}')
