@@ -1,108 +1,169 @@
+<div align="center">
+
 # Real-Time Video/Audio Summarization Engine
 
-An industry-standard, end-to-end AI pipeline that transcribes video or audio files and URL links (like YouTube) locally for free, and generates structured executive summaries, key takeaways, action items, and topic lists using the Gemini API. 
+![Python](https://img.shields.io/badge/Python-3.11%2B-3776AB?style=for-the-badge&logo=python&logoColor=white)
+![FastAPI](https://img.shields.io/badge/FastAPI-API-009688?style=for-the-badge&logo=fastapi&logoColor=white)
+![Streamlit](https://img.shields.io/badge/Streamlit-Dashboard-FF4B4B?style=for-the-badge&logo=streamlit&logoColor=white)
+![Whisper](https://img.shields.io/badge/Whisper-Speech%20to%20Text-000000?style=for-the-badge)
+![Gemini](https://img.shields.io/badge/Gemini-AI%20Summarizer-1A73E8?style=for-the-badge&logo=google&logoColor=white)
+![Docker](https://img.shields.io/badge/Docker-Containerized-2496ED?style=for-the-badge&logo=docker&logoColor=white)
 
-## Key Features
-* 🎙️ **Local Speech-to-Text**: Free local transcription using `faster-whisper` (runs efficiently on CPU with `int8` quantization). No cloud APIs needed for transcription.
-* 🤖 **AI Summarizer**: Leverages Google Gemini API (`gemini-2.5-flash` model, free tier) with native Pydantic structured output parsing.
-* ⚡ **Real-Time Streaming**: Streamlit frontend connects to FastAPI backend over WebSockets to display scrolling live transcripts and server logs.
-* 📁 **History Viewer**: Database layer powered by SQLite tracks past recordings, summaries, transcripts, and metadata. Fully searchable from the dashboard.
-* 📊 **Exportable Reports**: Download summary reports as cleanly formatted Markdown files or copy summaries directly.
-* 🎨 **Premium Modern Design**: Sleek dark UI with glassmorphism elements, CSS-animated bouncing audio waveforms, and AI "thinking" pulse.
+</div>
+
+An end-to-end, high-performance artificial intelligence pipeline to ingest, transcribe, and summarize long-form video and audio assets in real time.
 
 ---
 
-## Project Structure
-```
-.
+## 🚀 About The Project
+
+This platform treats transcription and summarization as a **real-time streaming event loop**, not a batch process.
+
+Given a media file or URL stream:
+- **Audio Normalization**: High-fidelity extraction to 16kHz mono WAV (optimal for Whisper).
+- **Local STT Execution**: Thread-safe segment-by-segment generation with timestamps.
+- **WebSocket Streaming**: Live logging and segment broadcasting to the front-end client.
+- **Structured Summarization**: Gemini API mapping to rigid schema structures using native Pydantic integrations.
+
+The system is designed to bypass cloud-IP video downloading restrictions automatically using a public fallback request pipeline.
+
+---
+
+## ✨ Key Features
+
+- 📥 **Flexible Ingestion**: Supports drag-and-drop local audio/video files alongside remote web URLs (YouTube, Vimeo, etc.).
+- 🔀 **Fail-safe Downloader**: Prioritizes `yt-dlp` local extraction, automatically falling back to Cobalt Tools API to bypass datacenter IP restrictions.
+- 🧮 **Local Transcription**: Uses `faster-whisper` (CTranslate2) running locally with `int8` quantization to minimize CPU and RAM footprint.
+- ⚡ **Asynchronous Serve Layer**: FastAPI backend with non-blocking event loops, WebSocket task listeners, and background task spawners.
+- 🤖 **Structured AI Summarizer**: Leverages `gemini-2.5-flash` with JSON output schemas to enforce structured summaries, key takeaways, action items, and discussion categories.
+- 🗄️ **Persistent Storage**: SQLite database layer backed by SQLAlchemy for persistent indexing, filtering, and retrieval of past reports.
+- 🎨 **Premium Visuals**: Dark-mode dashboard using custom CSS injections for bouncing waveform animations, pulsing AI state circles, and responsive split-screen results.
+- ☁️ **Self-contained Booting**: Detects deployed cloud environments (like Streamlit Cloud) and spins up the FastAPI backend automatically in a background daemon thread.
+
+---
+
+## 🛠️ Tech Stack
+
+### Audio & Machine Learning
+- `faster-whisper` (CTranslate2)
+- `yt-dlp`
+- `ffmpeg-python` (via subprocess)
+- `google-generativeai` (Gemini SDK)
+
+### Serving & Core API
+- `FastAPI`
+- `uvicorn`
+- `websockets`
+- `requests`
+- `pydantic`
+- `SQLAlchemy`
+
+### Dashboard Layer
+- `Streamlit`
+- `python-dotenv`
+
+---
+
+## 📂 Project Structure
+
+```bash
+Real-Time-Audio-Video-Summarizer/
 ├── backend/
-│   ├── __init__.py
-│   ├── main.py          # FastAPI application & WebSocket endpoints
-│   ├── database.py      # SQLAlchemy SQLite session management
-│   ├── models.py        # Database models & Pydantic schemas
-│   ├── pipeline.py      # Transcription & Gemini pipeline orchestrator
-│   └── utils.py         # Subprocess FFmpeg audio extraction & yt-dlp downloading
+│   ├── database.py      # SQLAlchemy connection & database session creator
+│   ├── main.py          # FastAPI application routes & WebSocket server
+│   ├── models.py        # SQLAlchemy schema declarations & Pydantic schemas
+│   ├── pipeline.py      # Core Speech-to-Text & Gemini pipeline thread manager
+│   └── utils.py         # FFmpeg converter & Cobalt API fallback downloader
 ├── frontend/
-│   └── app.py           # Streamlit dashboard & live streaming client
-├── scratch/
-│   └── test_pipeline.py # Backend database and Whisper model loader test
-├── Dockerfile           # Unified Python base image with FFmpeg installed
-├── docker-compose.yml   # Multi-service setup (FastAPI + Streamlit)
-├── requirements.txt     # Complete Python dependencies list
-├── .env.example         # Template configuration file
-└── README.md            # Documentation
+│   └── app.py           # Streamlit dashboard, client loop, & auto-backend launcher
+├── requirements.txt     # Complete Python dependencies manifest
+├── Dockerfile           # Unified Python base image with FFmpeg compiler
+├── docker-compose.yml   # Multi-service setup (FastAPI backend + Streamlit UI)
+├── .env.example         # Template config environment settings
+└── README.md            # Technical documentation
 ```
 
 ---
 
-## Prerequisites
-1. **Python 3.10+**: Ensure Python is installed locally.
-2. **FFmpeg**: Required to extract audio from video uploads.
-   * *macOS (Homebrew)*: `brew install ffmpeg` (already installed on this machine)
-   * *Windows (Scoop/Choco)*: `scoop install ffmpeg` or `choco install ffmpeg`
-   * *Linux (APT)*: `sudo apt install ffmpeg`
-3. **Google Gemini API Key**: Get a free API Key from [Google AI Studio](https://aistudio.google.com/).
+## 🏗️ Architecture
+
+```mermaid
+flowchart TD
+    User([User]) -->|Upload File or URL| Streamlit[Streamlit Frontend]
+    Streamlit -->|HTTP POST Upload| FastAPI[FastAPI Backend]
+    FastAPI -->|Extract Audio| FFmpeg[FFmpeg Subprocess]
+    FastAPI -->|Download Audio| yt_dlp[yt-dlp Engine]
+    FastAPI -->|Fallback Request| Cobalt[Cobalt Tools API]
+    FastAPI -->|Return task_id| Streamlit
+    Streamlit -->|WebSocket Connect| FastAPI
+    FastAPI -->|Background Task| Pipeline[Processing Pipeline]
+    Pipeline -->|Real-time Segments| Whisper[Local faster-whisper]
+    Whisper -->|Yield Transcripts| Pipeline
+    Pipeline -->|Real-time Summary Updates| Gemini[Gemini API]
+    Pipeline -->|Save Final Output| SQLite[(SQLite Database)]
+    Pipeline -->|WebSocket Push events| Streamlit
+```
 
 ---
 
-## Getting Started
+## 🔌 API Endpoints
 
-### Option A: Local Run (Recommended for Development)
-
-1. **Clone & Set Up Virtual Environment**:
-   ```bash
-   python3 -m venv .venv
-   source .venv/bin/activate
-   pip install --upgrade pip
-   pip install -r requirements.txt
-   ```
-
-2. **Configure Environment Variables**:
-   Copy `.env.example` to `.env`:
-   ```bash
-   cp .env.example .env
-   ```
-   Open the `.env` file and insert your Gemini API Key:
-   ```env
-   GEMINI_API_KEY=AIzaSy...
-   ```
-
-3. **Start FastAPI Backend**:
-   ```bash
-   uvicorn backend.main:app --reload --host 0.0.0.0 --port 8000
-   ```
-   *The API will be available at `http://localhost:8000` and API docs at `http://localhost:8000/docs`.*
-
-4. **Start Streamlit Frontend** (in a separate terminal tab):
-   ```bash
-   streamlit run frontend/app.py --server.port=8501 --server.address=0.0.0.0
-   ```
-   *Open your browser and navigate to `http://localhost:8501` to use the application.*
+- `POST /api/upload`: Upload local media and spawn background pipeline.
+- `POST /api/url`: Submit YouTube/Web URL and spawn background download pipeline.
+- `GET /api/history`: List all historical tasks.
+- `GET /api/history/{task_id}`: Retrieve full summary results and transcripts.
+- `DELETE /api/history/{task_id}`: Remove task record and clean cache.
+- `WS /ws/task/{task_id}`: WebSocket route streaming real-time status, logs, and transcript segments.
 
 ---
 
-### Option B: Run via Docker Compose
+## ⚙️ Local Setup
 
-Docker builds both containers and installs all required packages (including FFmpeg) inside the containers.
+### 1) Clone and Enter
+```bash
+git clone https://github.com/aryannverse/Real-Time-Audio-Video-Summarizer.git
+cd Real-Time-Audio-Video-Summarizer
+```
 
-1. **Configure Environment Variables**:
-   Copy `.env.example` to `.env` and fill in your `GEMINI_API_KEY` key.
+### 2) Environment + Install
+```bash
+python3.12 -m venv .venv
+source .venv/bin/activate
+pip install --upgrade pip
+pip install -r requirements.txt
+```
 
-2. **Spin Up Containers**:
-   ```bash
-   docker-compose up --build
-   ```
+### 3) Configure Secrets
+Copy `.env.example` to `.env` and set your key:
+```env
+GEMINI_API_KEY=your_gemini_api_key_here
+```
 
-3. **Access Services**:
-   * **Streamlit Dashboard**: `http://localhost:8501`
-   * **FastAPI Docs**: `http://localhost:8000/docs`
+### 4) Run services (Separate Terminals)
+```bash
+# Start backend
+uvicorn backend.main:app --reload --host 0.0.0.0 --port 8000
+
+# Start Streamlit dashboard
+streamlit run frontend/app.py --server.port=8501 --server.address=0.0.0.0
+```
 
 ---
 
-## How It Works Under the Hood
-1. **Upload / Submission**: User uploads a file or inputs a video link.
-2. **Audio Pre-processing**: If it's a URL, `yt-dlp` fetches the audio. If it's a local video, `FFmpeg` extracts it and saves it as a 16kHz mono `.wav` file (ideal format for Whisper).
-3. **Local STT**: `faster-whisper` processes the wav file segment-by-segment in a background thread, pushing live segments and timestamps into a queue.
-4. **WebSocket Stream**: FastAPI WebSocket server reads from the queue and sends logs/segments to the Streamlit frontend where they render instantly.
-5. **AI Summarization**: Once transcription concludes, the full text is dispatched to the Gemini API. Gemini returns structured JSON matching our Pydantic schema (`StructuredSummary`).
-6. **Persistence**: The final transcript, log trace, summaries, and metadata are saved to the local SQLite database.
+## 🐳 Docker Deployment
+
+To spin up both services in a containerized environment (with FFmpeg packaged automatically):
+
+```bash
+docker-compose up --build
+```
+* **Dashboard URL**: `http://localhost:8501`
+* **FastAPI documentation**: `http://localhost:8000/docs`
+
+---
+
+<div align="center">
+Built with focus, curiosity, and obsession by <a href="https://github.com/aryannverse">aryannverse</a> ⚡
+</div>
+
+---
